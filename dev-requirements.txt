@@ -1,0 +1,5 @@
+sphinx
+six
+pytest==5.4.3
+wheel==0.34.2
+requests==2.25.1
