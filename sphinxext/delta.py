@@ -19,7 +19,7 @@ def inject_changed_files(html_context: Dict[str, str], app: Sphinx) -> None:
     import requests
 
     res = requests.get(
-        f"https://api.github.com/repos/{app.config.delta_repo}/pulls/{html_context['current_version']}/files"
+        f"https://api.github.com/repos/{html_context['github_user']}/{html_context['github_repo']}/pulls/{html_context['current_version']}/files"
     )
     if res.status_code != requests.codes.ok:
         return
