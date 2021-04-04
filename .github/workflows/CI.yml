@@ -15,56 +15,74 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-python@v2
+    - uses: psf/black@stable
+
+  build:
+    runs-on: ubuntu-latest
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v2
       with:
-        python-version: 3.8
-    - name: Black
+        python-version: 3.6
+    - name: Install Dependencies
       run: |
-        pip install black
-        black --check --exclude /docs --diff .
-  test-extension:
+        python -m pip install --upgrade pip
+        pip install -r ./dev-requirements.txt
+    - name: Build Wheel
+      run: |
+        python setup.py sdist
+        python setup.py bdist_wheel
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: dist
+        path: dist
+
+  test:
+    needs: [build]
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: ['3.6', '3.7',  '3.8', '3.9', 'pypy3']
         sphinx-version: ['2', '3']
-    name: "Test Extension - Python(${{ matrix.python-version }}), Sphinx(${{ matrix.sphinx-version }})"
+        
+    name: "Test - Python(${{ matrix.python-version }}), Sphinx(${{ matrix.sphinx-version }})"
     steps:
       - uses: actions/checkout@v2
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install dependencies
-        run: |
-          set -xe
-          python -VV
-          python -m site
-          python -m pip install --upgrade pip setuptools wheel
-          python -m pip install -r dev-requirements.txt
-          python -m pip install sphinx==${{ matrix.sphinx-version }}
-      - name: Run Tests for ${{ matrix.python-version }}
-        run: |
-          python -m pytest -vv
-  pypi-release:
-    needs: test-extension
-    runs-on: ubuntu-latest
-    if: contains(github.ref, 'refs/tags/')
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.7'
-      - name: Install Dependencies
+
+      - name: Install Dev Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r ./dev-requirements.txt
-      - name: Build PyPI Wheel
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: dist
+          path: dist
+
+      - name: Install package
         run: |
-          python setup.py sdist
-          python setup.py bdist_wheel
+          pip install dist/*.whl
+
+      - name: Run Tests for ${{ matrix.python-version }}
+        run: |
+          cd tests
+          python -m pytest -vv
+
+  pypi-release:
+    needs: [build, test]
+    runs-on: ubuntu-latest
+    if: contains(github.ref, 'refs/tags/') && github.repository_owner	== 'wpilibsuite'
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: dist
+          path: dist
       - name: Publish a Python distribution to PyPI
         uses: pypa/gh-action-pypi-publish@master
         with:
