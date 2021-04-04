@@ -32,7 +32,5 @@ There are 2 required and 1 optional configurations:
 
 - `delta_doc_path`
   - REQUIRED: Relative path to your articles. IE: `source/docs`
-- `delta_repo`
-  - REQUIRED: Your GitHub repo identifier. IE: `wpilibsuite/sphinxext-delta`
 - `delta_inject_location`
   - OPTIONAL: Relative location for the toctree to be injected. Defaults to `master_doc`.

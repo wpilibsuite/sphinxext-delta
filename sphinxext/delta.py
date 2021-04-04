@@ -64,7 +64,6 @@ def config_inited(app: Sphinx, config: Dict[str, Any]):
 def setup(app: Sphinx) -> Dict[str, Any]:
     app.connect("config-inited", config_inited)
     app.add_config_value("delta_doc_path", "", str)
-    app.add_config_value("delta_repo", "", str)
     app.add_config_value("delta_inject_location", "", None)
 
     return {
