@@ -29,7 +29,6 @@ setuptools.setup(
     install_requires=["sphinx>=2.0", "six", "requests"],
     packages=["sphinxext"],
     classifiers=[
-        "Development Status :: 5 - Production/Stable",
         "Environment :: Plugins",
         "Environment :: Web Environment",
         "Framework :: Sphinx :: Extension",
@@ -40,6 +39,7 @@ setuptools.setup(
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
         "Programming Language :: Python",
         "Topic :: Documentation :: Sphinx",
         "Topic :: Documentation",
@@ -47,5 +47,5 @@ setuptools.setup(
         "Topic :: Text Processing",
         "Topic :: Utilities",
     ],
-    python_requires=">=3.4",
+    python_requires=">=3.6",
 )
