@@ -1,7 +1,7 @@
 import setuptools
 import subprocess
 
-version = "main"
+version = "9999"
 try:
     ret = subprocess.run(
         "git describe --tags --abbrev=0",
