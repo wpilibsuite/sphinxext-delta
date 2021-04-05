@@ -1,6 +1,7 @@
 import setuptools
 import subprocess
 
+version = "main"
 try:
     ret = subprocess.run(
         "git describe --tags --abbrev=0",
@@ -11,7 +12,7 @@ try:
     )
     version = ret.stdout.decode("utf-8").strip()
 except:
-    version = "main"
+    pass
 
 
 with open("README.md", "r", encoding="utf-8") as fh:
