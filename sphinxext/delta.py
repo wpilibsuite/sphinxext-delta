@@ -2,6 +2,7 @@ import os
 from typing import Any, Dict
 
 from sphinx.application import Sphinx
+from sphinx.application import logger
 
 
 def on_rtd() -> bool:
@@ -36,6 +37,9 @@ def inject_changed_files(html_context: Dict[str, str], app: Sphinx) -> None:
     for file_context in res.json():
         status: str = file_context["status"]
         filename: str = file_context["filename"]
+
+        if (app.config.delta_doc_path is None):
+            logger.error("Required option delta_doc_path is not set!")
         if status == "deleted":
             continue
         if not filename.startswith(app.config.delta_doc_path):
@@ -63,8 +67,8 @@ def config_inited(app: Sphinx, config: Dict[str, Any]):
 
 def setup(app: Sphinx) -> Dict[str, Any]:
     app.connect("config-inited", config_inited)
-    app.add_config_value("delta_doc_path", "", str)
-    app.add_config_value("delta_inject_location", "", None)
+    app.add_config_value("delta_doc_path", None, str)
+    app.add_config_value("delta_inject_location", None, str)
 
     return {
         "parallel_read_safe": True,
