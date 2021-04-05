@@ -51,12 +51,12 @@ def inject_changed_files(html_context: Dict[str, str], app: Sphinx) -> None:
 
     changes_rst += "\n\n.. todolist::\n"
 
-    logger.info("Injecting into", app.config.delta_inject_location)
     if app.config.delta_inject_location is None:
         inject_location = "index.rst"
     else:
         inject_location = app.config.delta_inject_location
 
+    logger.info("Injecting into", inject_location, "with source location of", app.config.delta_doc_path)
     with open(inject_location, "a") as f:
         f.write(changes_rst)
 
