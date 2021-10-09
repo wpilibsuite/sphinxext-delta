@@ -1,6 +1,8 @@
 import os
-from typing import Any, Dict
+from pathlib import Path
+from typing import Any, Dict, Union
 
+from docutils.core import publish_doctree
 from sphinx.application import Sphinx
 from sphinx.application import logger
 
@@ -15,6 +17,24 @@ def on_pr(html_context: Dict[str, str]) -> bool:
         or os.getenv("GITHUB_EVENT_NAME") == "pull_request"
     )
 
+def get_title(rst_path: Union[str, Path]):
+    rst_path = Path(rst_path)
+    rst_text = rst_path.read_text()
+    doctree = publish_doctree(rst_text)
+    
+    def is_section_title(node):
+        # https://stackoverflow.com/a/20313434
+        try:
+            return node.parent.tagname == "section" and node.tagname == "title"
+        except AttributeError:
+            return None
+    
+    titles = list(doctree.traverse(condition=is_section_title))
+    if not titles:
+        return "NO TITLE"
+    else:
+        return titles[0]
+    
 
 def inject_changed_files(html_context: Dict[str, str], app: Sphinx) -> None:
     import requests
@@ -47,7 +67,10 @@ def inject_changed_files(html_context: Dict[str, str], app: Sphinx) -> None:
         if not filename.endswith(".rst"):
             continue
 
-        changes_rst += f"   {os.path.relpath(filename, app.config.delta_doc_path)}\n"
+        rel_path = Path(os.path.relpath(filename, app.config.delta_doc_path))
+        title = get_title(rel_path)
+        
+        changes_rst += f"   {title} <{rel_path.with_suffix(".html")}>\n"
 
     changes_rst += "\n\n.. todolist::\n"
 
