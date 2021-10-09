@@ -70,7 +70,7 @@ def inject_changed_files(html_context: Dict[str, str], app: Sphinx) -> None:
         rel_path = Path(os.path.relpath(filename, app.config.delta_doc_path))
         title = get_title(rel_path)
         
-        changes_rst += f"   {title} <{rel_path.with_suffix(".html")}>\n"
+        changes_rst += f'   {title} <{rel_path.with_suffix(".html")}>\n'
 
     changes_rst += "\n\n.. todolist::\n"
 
