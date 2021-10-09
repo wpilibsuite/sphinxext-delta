@@ -44,6 +44,11 @@ def inject_changed_files(html_context: Dict[str, str], app: Sphinx) -> None:
         ]
     )
     
+    if app.config.delta_inject_location is None:
+        inject_location = "index.rst"
+    else:
+        inject_location = app.config.delta_inject_location
+    
     for file_context in res.json():
         status: str = file_context["status"]
         filename: str = file_context["filename"]
@@ -56,15 +61,14 @@ def inject_changed_files(html_context: Dict[str, str], app: Sphinx) -> None:
             continue
         if not filename.endswith(".rst"):
             continue
-
-        changes_rst += f"   {os.path.relpath(filename, app.config.delta_doc_path)}\n"
+        rel_path = os.path.relpath(filename, app.config.delta_doc_path)
+        if rel_path == inject_location:
+            continue
+        changes_rst += f"   {rel_path}\n"
 
     changes_rst += "\n\n.. todolist::\n"
 
-    if app.config.delta_inject_location is None:
-        inject_location = "index.rst"
-    else:
-        inject_location = app.config.delta_inject_location
+
 
     with open(os.join(os.dirname(inject_location), "prchangedfiles.rst"), "w") as f:
         f.write(changes_rst)
