@@ -25,6 +25,16 @@ def inject_changed_files(html_context: Dict[str, str], app: Sphinx) -> None:
     if res.status_code != requests.codes.ok:
         return
 
+    inject_rst = "".join(
+        [
+            ".. toctree::\n",
+            "   :maxdepth: 1\n",
+            "   :caption: PR CHANGED FILES\n",
+            "\n",
+            "   prchangedfiles",
+        ]
+    )
+
     changes_rst = "".join(
         [
             ".. toctree::\n",
@@ -33,7 +43,7 @@ def inject_changed_files(html_context: Dict[str, str], app: Sphinx) -> None:
             "\n",
         ]
     )
-
+    
     for file_context in res.json():
         status: str = file_context["status"]
         filename: str = file_context["filename"]
@@ -56,8 +66,11 @@ def inject_changed_files(html_context: Dict[str, str], app: Sphinx) -> None:
     else:
         inject_location = app.config.delta_inject_location
 
-    with open(inject_location, "a") as f:
+    with open(os.join(os.dirname(inject_location), "prchangedfiles.rst"), "w") as f:
         f.write(changes_rst)
+        
+    with open(inject_location, "a") as f:
+        f.write(inject_rst)
 
 
 def config_inited(app: Sphinx, config: Dict[str, Any]):
