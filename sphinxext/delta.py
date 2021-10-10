@@ -37,8 +37,6 @@ def inject_changed_files(html_context: Dict[str, str], app: Sphinx) -> None:
     for file_context in res.json():
         status: str = file_context["status"]
         filename: str = file_context["filename"]
-        filename = filename.split(".rst")[0]
-        logger.info(filename)
 
         if app.config.delta_doc_path is None:
             logger.error("Required option delta_doc_path is not set!")
@@ -49,6 +47,8 @@ def inject_changed_files(html_context: Dict[str, str], app: Sphinx) -> None:
         if not filename.endswith(".rst"):
             continue
 
+        filename = filename.split(".rst")[0]
+
         changes_rst += f"- :doc:`{os.path.relpath(filename, app.config.delta_doc_path)}`\n"
 
     changes_rst += "\n\n.. todolist::\n"
@@ -58,7 +58,6 @@ def inject_changed_files(html_context: Dict[str, str], app: Sphinx) -> None:
     else:
         inject_location = app.config.delta_inject_location
 
-    logger.info(changes_rst)
     with open(inject_location, "a") as f:
         f.write(changes_rst)
 
