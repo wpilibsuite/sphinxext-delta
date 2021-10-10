@@ -7,9 +7,6 @@ from sphinx.application import Sphinx
 from sphinx.application import logger
 
 
-logger = logging.getLogger(__name__)
-
-
 def on_rtd() -> bool:
     return os.getenv("READTHEDOCS") == "True"
 
