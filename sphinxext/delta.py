@@ -7,6 +7,9 @@ from sphinx.application import Sphinx
 from sphinx.application import logger
 
 
+logger = logging.getLogger(__name__)
+
+
 def on_rtd() -> bool:
     return os.getenv("READTHEDOCS") == "True"
 
@@ -57,6 +60,7 @@ def inject_changed_files(html_context: Dict[str, str], app: Sphinx) -> None:
     else:
         inject_location = app.config.delta_inject_location
 
+    logger.info(changes_rst)
     with open(inject_location, "a") as f:
         f.write(changes_rst)
 
