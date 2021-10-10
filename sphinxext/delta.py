@@ -37,6 +37,7 @@ def inject_changed_files(html_context: Dict[str, str], app: Sphinx) -> None:
     for file_context in res.json():
         status: str = file_context["status"]
         filename: str = file_context["filename"]
+        filename = filename.split(".rst")[0]
 
         if app.config.delta_doc_path is None:
             logger.error("Required option delta_doc_path is not set!")
