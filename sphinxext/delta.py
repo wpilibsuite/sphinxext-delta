@@ -47,7 +47,7 @@ def inject_changed_files(html_context: Dict[str, str], app: Sphinx) -> None:
         if not filename.endswith(".rst"):
             continue
 
-        changes_rst += f"- {os.path.relpath(filename, app.config.delta_doc_path)}\n"
+        changes_rst += f"- :doc:`{os.path.relpath(filename, app.config.delta_doc_path)}`\n"
 
     changes_rst += "\n\n.. todolist::\n"
 
