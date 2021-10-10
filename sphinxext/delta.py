@@ -60,7 +60,7 @@ def inject_changed_files(html_context: Dict[str, str], app: Sphinx) -> None:
 
         if app.config.delta_doc_path is None:
             logger.error("Required option delta_doc_path is not set!")
-        if status == "deleted":
+        if status == "removed":
             continue
         if not filename.startswith(app.config.delta_doc_path):
             continue
