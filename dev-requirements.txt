@@ -1,5 +1,6 @@
 sphinx
 six
-pytest==5.4.3
-wheel==0.34.2
+wheel==0.43.0
+pytest==7.4.4
 requests==2.25.1
+defusedxml
