@@ -38,7 +38,9 @@ def on_rtd() -> bool:
 
 def on_pr(html_context: Dict[str, str]) -> bool:
     return (
-        html_context["github_version"].startswith(html_context["commit"])
+        html_context["github_version"].startswith(
+            os.environ.get("READTHEDOCS_GIT_COMMIT_HASH")[:8]
+        )
         or os.getenv("GITHUB_EVENT_NAME") == "pull_request"
     )
 
@@ -47,7 +49,7 @@ def inject_changed_files(html_context: Dict[str, str], app: Sphinx) -> None:
     import requests
 
     res = requests.get(
-        f"https://api.github.com/repos/{html_context['github_user']}/{html_context['github_repo']}/pulls/{html_context['current_version']}/files"
+        f"https://api.github.com/repos/{html_context['github_user']}/{html_context['github_repo']}/pulls/{os.environ.get('READTHEDOCS_VERSION_NAME')}/files"
     )
 
     if res.status_code != requests.codes.ok:
