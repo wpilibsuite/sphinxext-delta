@@ -36,11 +36,9 @@ def on_rtd() -> bool:
     return os.getenv("READTHEDOCS") == "True"
 
 
-def on_pr(html_context: Dict[str, str]) -> bool:
+def on_pr() -> bool:
     return (
-        html_context["github_version"].startswith(
-            os.environ.get("READTHEDOCS_GIT_COMMIT_HASH")[:8]
-        )
+        os.getenv("READTHEDOCS_VERSION_TYPE") == "external"
         or os.getenv("GITHUB_EVENT_NAME") == "pull_request"
     )
 
