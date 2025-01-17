@@ -94,7 +94,7 @@ def inject_changed_files(html_context: Dict[str, str], app: Sphinx) -> None:
 
 
 def config_inited(app: Sphinx, config: Dict[str, Any]):
-    if on_rtd() and on_pr(config["html_context"]):
+    if on_rtd() and on_pr():
         inject_changed_files(config["html_context"], app)
 
 
