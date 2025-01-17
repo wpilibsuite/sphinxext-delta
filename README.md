@@ -10,7 +10,7 @@ python -m pip install sphinxext-delta
 
 ## Requirements
 
-- Sphinx >= 2
+- Sphinx >= 5
 - ReadTheDocs
 - GitHub
 
