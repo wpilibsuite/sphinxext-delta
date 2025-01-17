@@ -27,7 +27,7 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/wpilibsuite/sphinxext-delta",
-    install_requires=["sphinx>=2.0", "six", "requests"],
+    install_requires=["sphinx>=5.0", "six", "requests"],
     packages=["sphinxext"],
     classifiers=[
         "Environment :: Plugins",
@@ -42,6 +42,7 @@ setuptools.setup(
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
         "Programming Language :: Python",
         "Topic :: Documentation :: Sphinx",
         "Topic :: Documentation",
