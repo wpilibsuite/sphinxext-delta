@@ -22,15 +22,15 @@ Add `sphinxext.delta` to your extensions list in your `conf.py`
 
 ```
 extensions = [
-    sphinxext.delta,
+    "sphinxext.delta",
 ]
 ```
 
 ## Options
 
-There are 2 required and 1 optional configurations:
+There is 1 required and 1 optional configuration:
 
 - `delta_doc_path`
   - REQUIRED: Relative path to your articles. IE: `source/docs`
 - `delta_inject_location`
-  - OPTIONAL: Relative location for the toctree to be injected. Defaults to `master_doc`.
+  - OPTIONAL: Relative location for the toctree to be injected. Defaults to `index.rst`.
