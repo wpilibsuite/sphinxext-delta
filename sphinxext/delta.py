@@ -12,12 +12,34 @@ from sphinx.directives.other import TocTree
 def NoWarnings(func):
     @wraps(func)
     def wrapped(self, *args, **kwargs):
-        stream = self.state.document.reporter.stream
-        self.state.document.reporter.stream = None
-        ret = func(self, *args, **kwargs)
-        self.state.document.reporter.stream = stream
-        ret = list(filter(lambda node: not isinstance(node, nodes.system_message), ret))
-        return ret
+        # defensively handle reporter.stream which changed in Sphinx 8
+        doc = getattr(self.state, "document", None)
+        reporter = getattr(doc, "reporter", None)
+        prev_stream = None
+        stream_mutated = False
+
+        if reporter is not None and hasattr(reporter, "stream"):
+            try:
+                prev_stream = reporter.stream
+                reporter.stream = None
+                stream_mutated = True
+            except Exception:
+                stream_mutated = False
+
+        try:
+            ret = func(self, *args, **kwargs)
+            # try to filter returned iterable of nodes; if not iterable, return as-is
+            try:
+                filtered = [n for n in ret if not isinstance(n, nodes.system_message)]
+                return filtered
+            except TypeError:
+                return ret
+        finally:
+            if stream_mutated:
+                try:
+                    reporter.stream = prev_stream
+                except Exception:
+                    pass
 
     return wrapped
 
