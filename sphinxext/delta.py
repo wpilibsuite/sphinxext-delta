@@ -51,6 +51,7 @@ def inject_changed_files(html_context: Dict[str, str], app: Sphinx) -> None:
     )
 
     if res.status_code != requests.codes.ok:
+        logger.error("Github API request failed (status code: %s)", res.status_code)
         return
 
     changes_rst = "".join(
@@ -72,6 +73,8 @@ def inject_changed_files(html_context: Dict[str, str], app: Sphinx) -> None:
         status: str = file_context["status"]
         filename: str = file_context["filename"]
 
+        rel_path = os.path.relpath(filename, app.config.delta_doc_path)
+
         if app.config.delta_doc_path is None:
             logger.error("Required option delta_doc_path is not set!")
         if status == "removed":
@@ -81,7 +84,6 @@ def inject_changed_files(html_context: Dict[str, str], app: Sphinx) -> None:
         if not filename.endswith(".rst"):
             continue
 
-        rel_path = os.path.relpath(filename, app.config.delta_doc_path)
         if rel_path == inject_location:
             continue
         changes_rst += f"   {rel_path}\n"

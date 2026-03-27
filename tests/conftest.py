@@ -1,9 +1,41 @@
 import pytest
+import requests
 from sphinx.application import Sphinx
 from sphinx.testing.path import path
 
 
 pytest_plugins = "sphinx.testing.fixtures"
+
+
+@pytest.fixture(autouse=True)
+def set_rtd_env(monkeypatch):
+    monkeypatch.setenv("READTHEDOCS_VERSION_NAME", "17")
+    monkeypatch.setenv("READTHEDOCS", "True")
+    monkeypatch.setenv("GITHUB_EVENT_NAME", "pull_request")
+
+    # monkeypatch the GitHub API request used by the extension
+    def fake_get(url, *args, **kwargs):
+        class FakeResponse:
+            status_code = requests.codes.ok
+            text = (
+                '[{"status":"modified","filename":"tests/roots/test-basic/test.rst"}]'
+            )
+
+            def json(self_inner):
+                return [
+                    {
+                        "status": "modified",
+                        "filename": "tests/roots/test-basic/test.rst",
+                    },
+                    {
+                        "status": "added",
+                        "filename": "tests/roots/test-basic/new_page.rst",
+                    },
+                ]
+
+        return FakeResponse()
+
+    monkeypatch.setattr(requests, "get", fake_get)
 
 
 @pytest.fixture(scope="session")
