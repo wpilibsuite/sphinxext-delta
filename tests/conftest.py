@@ -11,7 +11,6 @@ except Exception:
 
 from pathlib import Path
 
-
 pytest_plugins = "sphinx.testing.fixtures"
 
 
