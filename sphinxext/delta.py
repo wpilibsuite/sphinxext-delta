@@ -65,16 +65,41 @@ def on_pr() -> bool:
     )
 
 
-def inject_changed_files(html_context: Dict[str, str], app: Sphinx) -> None:
+def fetch_and_process_page(
+    api_url: str, page: int, per_page: int, all_files: list
+) -> bool:
+    """Fetch the next page of files from GitHub API and return whether to continue paginating."""
     import requests
 
-    res = requests.get(
-        f"https://api.github.com/repos/{html_context['github_user']}/{html_context['github_repo']}/pulls/{os.environ.get('READTHEDOCS_VERSION_NAME')}/files"
-    )
+    res = requests.get(api_url, params={"page": page, "per_page": per_page})
 
     if res.status_code != requests.codes.ok:
         logger.error("Github API request failed (status code: %s)", res.status_code)
-        return
+        return False
+
+    page_files = res.json()
+    if not page_files:
+        return False
+
+    all_files.extend(page_files)
+
+    # Continue only if we got a full page of results
+    return len(page_files) == per_page
+
+
+def inject_changed_files(html_context: Dict[str, str], app: Sphinx) -> None:
+    api_url = f"https://api.github.com/repos/{html_context['github_user']}/{html_context['github_repo']}/pulls/{os.environ.get('READTHEDOCS_VERSION_NAME')}/files"
+
+    all_files = []
+    page = 1
+    per_page = 100  # Max items per page for GitHub API
+    max_pages = 30  # Safety limit based on maximum files from Github API (3000 files)
+
+    # Paginate through all results
+    while (
+        fetch_and_process_page(api_url, page, per_page, all_files) and page < max_pages
+    ):
+        page += 1
 
     changes_rst = "".join(
         [
@@ -91,7 +116,7 @@ def inject_changed_files(html_context: Dict[str, str], app: Sphinx) -> None:
     else:
         inject_location = app.config.delta_inject_location
 
-    for file_context in res.json():
+    for file_context in all_files:
         status: str = file_context["status"]
         filename: str = file_context["filename"]
 
